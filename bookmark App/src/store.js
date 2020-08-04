@@ -1,40 +1,51 @@
-const store = {
-    bookmarks: [],
-    adding: true,
-    error: null,
-    filter: 0, 
+"use strict";
 
-    addNewBookMark(bookmark) {
-        return this.bookmarks.push(bookmark)
-    }, 
-    findAndDeleteBookMark(id){
-        return this.bookmarks.filter(currentBookmark => 
-            currentBookmark.id !== id )
-    }, 
-    findByID(id){
-        return this.bookmarks.find(currentBookmark =>
-            currentBookmark.id === id)
-    },
-    setError(newError){
-        let error = newError; 
-        return error 
-    }, 
+const bookmarks = [];
+let adding = false;
+let error = null;
+let filter = 0;
 
-    findAndUpdate(id, newData){
-        let bookmark = this.findByID(id);
-        Object.assign(bookmark, newData)
-    }, 
+function addBookMark(bookmark) {
+  this.bookmarks.push(bookmark);
+}
 
-    closeAllBookMarks(){
-        this.bookmarks.map(bookmark =>
-        bookmark.expanded = false
-        )
-    }, 
+function findAndDeleteBookMark(id) {
+  this.bookmarks = this.bookmarks.filter(
+    (currentBookmark) => currentBookmark.id !== id
+  );
+}
 
-    
-  
-     
+function findByID(id) {
+  return this.bookmarks.find((currentBookmark) => currentBookmark.id === id);
+}
 
+function ratingFilter(list) {
+  return list.filter((Bookmark) => Bookmark.rating >= this.filter);
+}
 
+function setError(newError) {
+  this.error = newError;
+}
 
-        }; 
+function findAndUpdate(id, newData) {
+  let currentBookmark = this.findByID(id);
+  Object.assign(currentBookmark, newData);
+}
+
+function closeAllBookMarks(bookmark) {
+  bookmark.expanded = !bookmark.expanded;
+}
+
+export default {
+  addBookMark,
+  findAndDeleteBookMark,
+  findByID,
+  ratingFilter,
+  setError,
+  findAndUpdate,
+  closeAllBookMarks,
+  bookmarks,
+  adding,
+  filter,
+  error,
+};

@@ -1,48 +1,67 @@
-const BASE_URL= "https://thinkful-list-api.herokuapp.com/juliabugayev"; 
+"use strict";
+const BookmarkAPI =
+  "https://thinkful-list-api.herokuapp.com/juliabugayev/bookmarks";
 
-let fetchBookMark = (...args) => {
-    let error = null; 
-    return fetch(...args)
-    .then ((response) => {
-        if (!response.ok) {
-            error = {code: response.status}; 
+//...arg takes multiple arguments
+
+const apiFetch = function (...args) {
+  let error;
+  return fetch(...args)
+    .then((Response) => {
+      if (!Response.ok) {
+        error = { code: Response.status };
+
+        if (!Response.headers.get("content-type").includes("json")) {
+          error.message = Response.statusText;
+          return Promise.reject(error);
         }
-        return response.json(); 
+      }
+      return Response.json();
     })
     .then((data) => {
-        if (error){
-            error.message = data.message;
-            return Promise.reject(error);
-        }
-        return data;
-    })
+      if (error) {
+        error.message = data.message;
+        return Promise.reject(error);
+      }
+      return data;
+    });
+};
+
+function deleteBookmark(id) {
+  return apiFetch(`${BookmarkAPI}/${id}`, {
+    method: "DELETE",
+  });
 }
 
-let bookMarkDelete =(id) => {
-    return fetchBookMark(`${BASE_URL}/${id}}`,{
-        method: 'DELETE', 
-        headers: {
-            'Content-Type': 'application/json',
-        }, 
+function updateBookmark(id, updateInfo) {
+  const update = JSON.stringify(updateInfo);
+  return apiFetch(`${BookmarkAPI}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: update,
+  });
+}
 
-    }); 
-}; 
+function addNewBookmark(bookmark) {
+  const addBookmark = JSON.stringify(bookmark);
+  return apiFetch(`${BookmarkAPI}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: addBookmark,
+  });
+}
 
-let newBookMarkCreate = (bookmark) => {
-    let newBookMark = JSON.stringify(bookmark); 
-    return fetchBookMark(BASE_URL , {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    }); 
-}; 
+function obtainBookmark() {
+  return apiFetch(`${BookmarkAPI}`);
+}
 
-let bookmarkGet = (bookmark) => {
-    return fetchBookMark(BASE_URL, {
-        method: 'GET', 
-        headers:{
-            'Content-Type': 'application/json',
-        }, 
-    }); 
-}; 
+export default {
+  deleteBookmark,
+  obtainBookmark,
+  addNewBookmark,
+  updateBookmark,
+};
